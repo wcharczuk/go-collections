@@ -36,7 +36,7 @@ func (l *List) At(index int) interface{} {
 	return elementAtIndex(l.contents, index)
 }
 
-func (l *List) GetLength() int {
+func (l *List) Len() int {
 	if l.contents == nil {
 		return 0
 	}
@@ -45,13 +45,13 @@ func (l *List) GetLength() int {
 }
 
 func (l *List) RemoveAt(index int) error {
-	if index >= l.GetLength() {
+	if index >= l.Len() {
 		return exception.Newf("Invalid index for RemoveAt(%d)", index)
 	}
 
 	if index == 0 {
 		l.contents = l.contents[1:]
-	} else if index == l.GetLength()-1 {
+	} else if index == l.Len()-1 {
 		l.contents = l.contents[0:index]
 	} else {
 		l.contents = append(l.contents[0:index], l.contents[index+1:]...)
@@ -65,4 +65,8 @@ func (l *List) Clear() {
 
 func (l *List) GetEnumerator() Enumerator {
 	return NewSliceEnumerator(l.contents)
+}
+
+func (l *List) Swap(i, j int) {
+	l.contents[i], l.contents[j] = l.contents[j], l.contents[i]
 }

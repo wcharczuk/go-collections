@@ -11,13 +11,12 @@ func TestListAdd(t *testing.T) {
 
 	fromSlice := NewList([]int{1, 2, 3, 4})
 	a.NotNil(fromSlice)
-	a.Equal(4, fromSlice.GetLength())
+	a.Equal(4, fromSlice.Len())
 
 	fromSlice.Add(5)
-	a.Equal(5, fromSlice.GetLength())
+	a.Equal(5, fromSlice.Len())
 
-	value, valueErr := fromSlice.At(4)
-	a.Nil(valueErr)
+	value := fromSlice.At(4)
 	a.Equal(5, value)
 }
 
@@ -28,7 +27,7 @@ func TestListRemoveAt(t *testing.T) {
 
 	removeErr := fromSlice.RemoveAt(3)
 	a.Nil(removeErr)
-	a.Equal(3, fromSlice.GetLength())
+	a.Equal(3, fromSlice.Len())
 }
 
 func TestListGetEnumerator(t *testing.T) {

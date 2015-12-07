@@ -1,7 +1,5 @@
 package collections
 
-import "reflect"
-
 // --------------------------------------------------------------------------------
 // exported interfaces
 // --------------------------------------------------------------------------------
@@ -118,77 +116,4 @@ func (se sliceEnumerator) GetCurrent() interface{} {
 func (se *sliceEnumerator) Reset() {
 	se.index = 0
 	se.length = getSliceLength(se.contents)
-}
-
-// --------------------------------------------------------------------------------
-// internal utility functions
-// --------------------------------------------------------------------------------
-
-func getSliceLength(slice interface{}) int {
-	if slice == nil {
-		return 0
-	}
-
-	sliceValue := reflect.ValueOf(slice)
-	return sliceValue.Len()
-}
-
-func getMapLength(contents interface{}) int {
-	if contents == nil {
-		return 0
-	}
-
-	contentsValue := reflect.ValueOf(contents)
-	return contentsValue.Len()
-}
-
-func isSlice(thing interface{}) bool {
-	if thing == nil {
-		return false
-	}
-
-	thingType := reflect.TypeOf(thing)
-	return thingType.Kind() == reflect.Slice
-}
-
-func isMap(thing interface{}) bool {
-	if thing == nil {
-		return false
-	}
-
-	thingType := reflect.TypeOf(thing)
-	return thingType.Kind() == reflect.Map
-}
-
-func elementAtIndex(slice interface{}, index int) interface{} {
-	if slice == nil {
-		return nil
-	}
-
-	ofSliceValue := reflect.ValueOf(slice)
-	return ofSliceValue.Index(index).Interface()
-}
-
-func elementAtKey(contents interface{}, key interface{}) interface{} {
-	if contents == nil {
-		return nil
-	}
-
-	contentsValue := reflect.ValueOf(contents)
-	return contentsValue.MapIndex(reflect.ValueOf(key)).Interface()
-}
-
-func getMapKeys(contents interface{}) []interface{} {
-	if contents == nil {
-		return nil
-	}
-
-	contentsValue := reflect.ValueOf(contents)
-	mapKeys := contentsValue.MapKeys()
-
-	keys := make([]interface{}, len(mapKeys))
-	for i, keyValue := range mapKeys {
-		keys[i] = keyValue.Interface()
-	}
-	return keys
 }

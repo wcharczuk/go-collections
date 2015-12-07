@@ -7,6 +7,10 @@ import (
 	"github.com/blendlabs/go-exception"
 )
 
+// --------------------------------------------------------------------------------
+// exported interfaces
+// --------------------------------------------------------------------------------
+
 // An interface that provides the mechanism for a type to be sorted
 type Comparable interface {
 	// CompareTo should return -1 if it is less than other, 0 if equal to other, and 1 if greater than other
@@ -15,6 +19,53 @@ type Comparable interface {
 
 // Comparer should return -1 if it is less than other, 0 if equal to other, and 1 if greater than other
 type Comparer func(this, that interface{}) (int, error)
+
+// --------------------------------------------------------------------------------
+// we need this for sorting
+// --------------------------------------------------------------------------------
+
+func getComparer(forThis interface{}) (Comparer, error) {
+	if !isSlice(forThis) {
+		return nil, exception.Newf("%v is not a slice", forThis)
+	}
+
+	forThisType := getSliceType(forThis)
+
+	switch forThisType.Kind() {
+	case reflect.Int16:
+		return int16Comparer, nil
+	case reflect.Int32, reflect.Int:
+		return intComparer, nil
+	case reflect.Int64:
+		return int64Comparer, nil
+	case reflect.Float32:
+		return float32Comparer, nil
+	case reflect.Float64:
+		return float64Comparer, nil
+	default:
+		if typed, isComparable := forThis.(Comparable); isComparable {
+			return wrapComparable(typed), nil
+		} else {
+			return nil, exception.Newf("%v does not implement Comparable and is not a builtin type.", forThisType.Name())
+		}
+	}
+
+	return nil, nil
+}
+
+// --------------------------------------------------------------------------------
+// Comparable helpers
+// --------------------------------------------------------------------------------
+
+func wrapComparable(source Comparable) Comparer {
+	return func(this, that interface{}) (int, error) {
+		return source.CompareTo(that)
+	}
+}
+
+// --------------------------------------------------------------------------------
+// comparers for builtins
+// --------------------------------------------------------------------------------
 
 func int16Comparer(this, that interface{}) (int, error) {
 	thisTyped, thisTypedErr := castAsInt16(this)
@@ -28,12 +79,12 @@ func int16Comparer(this, that interface{}) (int, error) {
 	}
 
 	if thisTyped < thatTyped {
-		return -1
+		return -1, nil
 	} else if thisTyped > thatTyped {
-		return 1
+		return 1, nil
 	}
 
-	return 0
+	return 0, nil
 }
 
 func intComparer(this, that interface{}) (int, error) {
@@ -48,12 +99,12 @@ func intComparer(this, that interface{}) (int, error) {
 	}
 
 	if thisTyped < thatTyped {
-		return -1
+		return -1, nil
 	} else if thisTyped > thatTyped {
-		return 1
+		return 1, nil
 	}
 
-	return 0
+	return 0, nil
 }
 
 func int64Comparer(this, that interface{}) (int, error) {
@@ -68,12 +119,12 @@ func int64Comparer(this, that interface{}) (int, error) {
 	}
 
 	if thisTyped < thatTyped {
-		return -1
+		return -1, nil
 	} else if thisTyped > thatTyped {
-		return 1
+		return 1, nil
 	}
 
-	return 0
+	return 0, nil
 }
 
 func float32Comparer(this, that interface{}) (int, error) {
@@ -88,12 +139,12 @@ func float32Comparer(this, that interface{}) (int, error) {
 	}
 
 	if thisTyped < thatTyped {
-		return -1
+		return -1, nil
 	} else if thisTyped > thatTyped {
-		return 1
+		return 1, nil
 	}
 
-	return 0
+	return 0, nil
 }
 
 func float64Comparer(this, that interface{}) (int, error) {
@@ -108,12 +159,12 @@ func float64Comparer(this, that interface{}) (int, error) {
 	}
 
 	if thisTyped < thatTyped {
-		return -1
+		return -1, nil
 	} else if thisTyped > thatTyped {
-		return 1
+		return 1, nil
 	}
 
-	return 0
+	return 0, nil
 }
 
 func stringComparer(this, that interface{}) (int, error) {
@@ -127,7 +178,7 @@ func stringComparer(this, that interface{}) (int, error) {
 		return 0, thatTypedErr
 	}
 
-	return strings.Compare(thisTyped, thatTyped)
+	return strings.Compare(thisTyped, thatTyped), nil
 }
 
 func castAsInt16(value interface{}) (int16, error) {
@@ -138,7 +189,7 @@ func castAsInt16(value interface{}) (int16, error) {
 		valueType := reflect.TypeOf(value)
 		valueReflected := reflect.ValueOf(value)
 		if valueType.ConvertibleTo(destinationType) {
-			return valueReflected.Convert(intType).Interface().(int16), nil
+			return valueReflected.Convert(destinationType).Interface().(int16), nil
 		}
 	}
 
@@ -154,7 +205,7 @@ func castAsInt(value interface{}) (int, error) {
 		valueType := reflect.TypeOf(value)
 		valueReflected := reflect.ValueOf(value)
 		if valueType.ConvertibleTo(destinationType) {
-			return valueReflected.Convert(intType).Interface().(int), nil
+			return valueReflected.Convert(destinationType).Interface().(int), nil
 		}
 	}
 
@@ -170,7 +221,7 @@ func castAsInt64(value interface{}) (int64, error) {
 		valueType := reflect.TypeOf(value)
 		valueReflected := reflect.ValueOf(value)
 		if valueType.ConvertibleTo(destinationType) {
-			return valueReflected.Convert(intType).Interface().(int64), nil
+			return valueReflected.Convert(destinationType).Interface().(int64), nil
 		}
 	}
 
@@ -186,7 +237,7 @@ func castAsFloat32(value interface{}) (float32, error) {
 		valueType := reflect.TypeOf(value)
 		valueReflected := reflect.ValueOf(value)
 		if valueType.ConvertibleTo(destinationType) {
-			return valueReflected.Convert(intType).Interface().(float32), nil
+			return valueReflected.Convert(destinationType).Interface().(float32), nil
 		}
 	}
 
@@ -202,7 +253,7 @@ func castAsFloat64(value interface{}) (float64, error) {
 		valueType := reflect.TypeOf(value)
 		valueReflected := reflect.ValueOf(value)
 		if valueType.ConvertibleTo(destinationType) {
-			return valueReflected.Convert(intType).Interface().(float64), nil
+			return valueReflected.Convert(destinationType).Interface().(float64), nil
 		}
 	}
 

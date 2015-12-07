@@ -28,7 +28,48 @@ func TestLinqFilter(t *testing.T) {
 		return value.(int) < 3
 	}).(*List)
 
-	a.Equal(2, filtered.GetLength())
+	a.Equal(2, filtered.Len())
 	a.Equal(1, filtered.At(0))
 	a.Equal(2, filtered.At(1))
+}
+
+type myTestType struct {
+	Id   int
+	Name string
+}
+
+func TestLinqSortInts(t *testing.T) {
+	a := assert.New(t)
+	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
+
+	sorted := Sort(ints, func(value interface{}) interface{} {
+		return value
+	}).(*List)
+
+	a.Equal(1, sorted.At(0))
+	a.Equal(2, sorted.At(1))
+	a.Equal(3, sorted.At(2))
+	a.Equal(4, sorted.At(3))
+	a.Equal(5, sorted.At(4))
+	a.Equal(6, sorted.At(5))
+	a.Equal(7, sorted.At(6))
+	a.Equal(8, sorted.At(7))
+}
+
+func TestLinqSortDescendingInts(t *testing.T) {
+	a := assert.New(t)
+	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
+
+	sorted := SortDescending(ints, func(value interface{}) interface{} {
+		return value
+	}).(*List)
+
+	a.Equal(8, sorted.At(0))
+	a.Equal(7, sorted.At(1))
+	a.Equal(6, sorted.At(2))
+	a.Equal(5, sorted.At(3))
+	a.Equal(4, sorted.At(4))
+	a.Equal(3, sorted.At(5))
+	a.Equal(2, sorted.At(6))
+	a.Equal(1, sorted.At(7))
 }
