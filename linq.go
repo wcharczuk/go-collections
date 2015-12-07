@@ -40,7 +40,7 @@ func Filter(collection Enumerable, predicate Predicate) Enumerable {
 	return newList
 }
 
-func Sort(collection Enumerable, sortKey KeySelector) Enumerable {
+func SortBy(collection Enumerable, sortKey KeySelector) Enumerable {
 	collectionAsList := ToList(collection).(*List)
 	comparer, comparerError := getComparer(collectionAsList.contents)
 	if comparerError != nil {
@@ -52,7 +52,7 @@ func Sort(collection Enumerable, sortKey KeySelector) Enumerable {
 	return collectionAsList
 }
 
-func SortDescending(collection Enumerable, sortKey KeySelector) Enumerable {
+func SortByDescending(collection Enumerable, sortKey KeySelector) Enumerable {
 	collectionAsList := ToList(collection).(*List)
 	comparer, comparerError := getComparer(collectionAsList.contents)
 	if comparerError != nil {
@@ -62,6 +62,29 @@ func SortDescending(collection Enumerable, sortKey KeySelector) Enumerable {
 	sort.Sort(newSortableList(collectionAsList, comparer, true))
 
 	return collectionAsList
+}
+
+func Peek(collection Enumerable) interface{} {
+	e := collection.GetEnumerator()
+	return e.GetCurrent()
+}
+
+func PeekBack(collection Enumerable) interface{} {
+	asList := ToList(collection).(*List)
+	return asList.Last()
+}
+
+func First(collection Enumerable, predicate Predicate) interface{} {
+	e := collection.GetEnumerator()
+	hasNext := true
+	for hasNext {
+		current := e.GetCurrent()
+		if predicate(current) {
+			return current
+		}
+		hasNext = e.MoveNext()
+	}
+	return nil
 }
 
 func ToList(collection Enumerable) Enumerable {

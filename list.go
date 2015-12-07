@@ -36,6 +36,14 @@ func (l *List) At(index int) interface{} {
 	return elementAtIndex(l.contents, index)
 }
 
+func (l *List) Last() interface{} {
+	if len(l.contents) == 0 {
+		return nil
+	}
+
+	return l.contents[l.Len()-1]
+}
+
 func (l *List) Len() int {
 	if l.contents == nil {
 		return 0

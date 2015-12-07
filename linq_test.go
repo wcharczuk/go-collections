@@ -33,16 +33,11 @@ func TestLinqFilter(t *testing.T) {
 	a.Equal(2, filtered.At(1))
 }
 
-type myTestType struct {
-	Id   int
-	Name string
-}
-
 func TestLinqSortInts(t *testing.T) {
 	a := assert.New(t)
 	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
 
-	sorted := Sort(ints, DefaultKeySelector).(*List)
+	sorted := SortBy(ints, DefaultKeySelector).(*List)
 
 	a.Equal(1, sorted.At(0))
 	a.Equal(2, sorted.At(1))
@@ -58,7 +53,7 @@ func TestLinqSortDescendingInts(t *testing.T) {
 	a := assert.New(t)
 	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
 
-	sorted := SortDescending(ints, DefaultKeySelector).(*List)
+	sorted := SortByDescending(ints, DefaultKeySelector).(*List)
 
 	a.Equal(8, sorted.At(0))
 	a.Equal(7, sorted.At(1))
@@ -68,4 +63,23 @@ func TestLinqSortDescendingInts(t *testing.T) {
 	a.Equal(3, sorted.At(5))
 	a.Equal(2, sorted.At(6))
 	a.Equal(1, sorted.At(7))
+}
+
+type myTestType struct {
+	Id   int
+	Name string
+}
+
+func TestLinqSortStructs(t *testing.T) {
+	a := assert.New(t)
+
+	l := NewList(myTestType{Id: 1, Name: "Foo"}, myTestType{Id: 2, Name: "Bar"}, myTestType{Id: 3, Name: "Baz"})
+
+	sorted := SortBy(l, func(v interface{}) interface{} {
+		return (v.(myTestType)).Id
+	}).(*List)
+
+	a.Equal(3, sorted.At(0))
+	a.Equal(2, sorted.At(1))
+	a.Equal(1, sorted.At(2))
 }

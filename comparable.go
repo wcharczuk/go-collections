@@ -24,14 +24,8 @@ type Comparer func(this, that interface{}) (int, error)
 // we need this for sorting
 // --------------------------------------------------------------------------------
 
-func getComparer(forThis interface{}) (Comparer, error) {
-	if !isSlice(forThis) {
-		return nil, exception.Newf("%v is not a slice", forThis)
-	}
-
-	forThisType := getSliceType(forThis)
-
-	switch forThisType.Kind() {
+func getComparer(forType reflect.Type) (Comparer, error) {
+	switch forType.Kind() {
 	case reflect.Uint8:
 		return uint8Comparer, nil
 	case reflect.Uint16:
@@ -53,7 +47,7 @@ func getComparer(forThis interface{}) (Comparer, error) {
 	case reflect.Float64:
 		return float64Comparer, nil
 	default:
-		if typed, isComparable := forThis.(Comparable); isComparable {
+		if typed, isComparable := forType.(Comparable); isComparable {
 			return wrapComparable(typed), nil
 		} else {
 			return nil, exception.Newf("%v does not implement Comparable and is not a builtin type.", forThisType.Name())
