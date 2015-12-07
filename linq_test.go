@@ -42,9 +42,7 @@ func TestLinqSortInts(t *testing.T) {
 	a := assert.New(t)
 	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
 
-	sorted := Sort(ints, func(value interface{}) interface{} {
-		return value
-	}).(*List)
+	sorted := Sort(ints, DefaultKeySelector).(*List)
 
 	a.Equal(1, sorted.At(0))
 	a.Equal(2, sorted.At(1))
@@ -60,9 +58,7 @@ func TestLinqSortDescendingInts(t *testing.T) {
 	a := assert.New(t)
 	ints := NewList(7, 5, 3, 8, 2, 1, 4, 6)
 
-	sorted := SortDescending(ints, func(value interface{}) interface{} {
-		return value
-	}).(*List)
+	sorted := SortDescending(ints, DefaultKeySelector).(*List)
 
 	a.Equal(8, sorted.At(0))
 	a.Equal(7, sorted.At(1))

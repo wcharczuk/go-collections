@@ -11,6 +11,10 @@ type MapAction func(value interface{}) interface{}
 // Predicate is a function that takes a value and returns a true or false
 type Predicate func(value interface{}) bool
 
+func DefaultKeySelector(value interface{}) interface{} {
+	return value
+}
+
 func Map(collection Enumerable, mapFn MapAction) Enumerable {
 	newList := &List{}
 	e := collection.GetEnumerator()
