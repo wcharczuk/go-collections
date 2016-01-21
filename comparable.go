@@ -50,7 +50,7 @@ func getComparer(forType reflect.Type) (Comparer, error) {
 		if typed, isComparable := forType.(Comparable); isComparable {
 			return wrapComparable(typed), nil
 		} else {
-			return nil, exception.Newf("%v does not implement Comparable and is not a builtin type.", forThisType.Name())
+			return nil, exception.Newf("%v does not implement Comparable and is not a builtin type.", forType.Name())
 		}
 	}
 

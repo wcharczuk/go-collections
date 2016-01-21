@@ -26,6 +26,10 @@ func Map(collection Enumerable, mapFn MapAction) Enumerable {
 	return newList
 }
 
+func (e Enumerable) Select(mapFn MapAction) Enumerable {
+	return Map(e, mapFn)
+}
+
 func Filter(collection Enumerable, predicate Predicate) Enumerable {
 	newList := &List{}
 	e := collection.GetEnumerator()
